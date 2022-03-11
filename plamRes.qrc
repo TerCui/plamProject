@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/new/resource">
+        <file>images/plam.gif</file>
+        <file>images/noregisted.svg</file>
+    </qresource>
+</RCC>

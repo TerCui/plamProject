@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/new/res">
+        <file>images/plam.gif</file>
+        <file>images/noregisted.png</file>
+        <file>images/passed.png</file>
+        <file>images/warn.png</file>
+        <file>images/add.png</file>
+        <file>images/face.png</file>
+        <file>images/plam.png</file>
+        <file>images/back.svg</file>
+        <file>images/search.svg</file>
+        <file>images/edit.svg</file>
+        <file>images/checked.svg</file>
+        <file>images/unchecked.svg</file>
+        <file>images/error.svg</file>
+        <file>images/right.svg</file>
+    </qresource>
+</RCC>
