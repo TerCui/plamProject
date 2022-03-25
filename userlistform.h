@@ -20,9 +20,13 @@ public:
     ~UserListForm();
 public slots:
     void userListTimerCount(void);
+
 signals:
     void backWorking();
     void toSearch();
+    void resetSearchForm();
+    void editUser(QString id);
+
 
 private slots:
     void on_pushButton_delete_clicked();
@@ -31,11 +35,14 @@ private slots:
 
     void on_pushButton_search_clicked();
 
+    void searchUsers(QString);
+    void ProcessSelect();
+
 private:
     Ui::UserListForm *ui;
     QTimer *timer;
     DbOperator *dbOperator;
-    void initData();
+    void initData(QString id);
 };
 
 #endif // USERLISTFORM_H

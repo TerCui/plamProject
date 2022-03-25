@@ -1,6 +1,15 @@
 #include "workingwidget.h"
 #include "ui_workingwidget.h"
 #include <QDebug>
+#include "toast.h"
+#include "palm.h"
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/imgcodecs/legacy/constants_c.h"
+
+#include "rgbcamerathread.h"
+using namespace std;
+
 
 WorkingWidget::WorkingWidget(QWidget *parent)
     : QWidget(parent)
@@ -31,18 +40,29 @@ WorkingWidget::WorkingWidget(QWidget *parent)
 //        qDebug()<<"Date:"<<strDate<<endl;
     ui->label_day->setText (strDate);
 
-    QMovie *movie=new QMovie(":/new/res/images/plam.gif");
+    movie=new QMovie(":/new/res/images/plam.gif");
     ui->label_plam->setMovie(movie);
     QSize si(500,500);
     movie->setScaledSize(si);
-
     movie->start();
+    regStart = false;
+
+
+//    rgbcamera = new RgbCameraThread(this);
+//    connect(rgbcamera,SIGNAL(jpegFrame(QImage)),this,SLOT(showFrame(QImage)),Qt::QueuedConnection);
+    ircamera = new CameraThread(this);
+
 
 }
 
 WorkingWidget::~WorkingWidget()
 {
+    ircamera->exitThread();
+    delete ircamera;
     timer->stop();
+//    emit isDone();
+//    rgbcamera->terminate();
+//    delete rgbcamera;
     delete ui;
 }
 
@@ -56,6 +76,11 @@ void WorkingWidget::timerUpdate(void)
     QString strDate = locale.toString(QDate::currentDate(),QString("yyyy/M/d dddd"));
 //        qDebug()<<"Date:"<<strDate<<endl;
     ui->label_day->setText (strDate);
+    if(regStart){
+        regStart = false;
+//        qDebug()<<"resume working time:"<<strTime<<endl;
+        emit resumeDone();
+    }
 }
 
 
@@ -63,17 +88,52 @@ void WorkingWidget::timerUpdate(void)
 void WorkingWidget::on_pushButton_clicked()
 {
 //    qDebug()<<"sended"<<endl;
-    emit noRegResult();
+//    emit noRegResult();
+//    emit startIR();
+//    ui->pushButton->hide();
+//    ui->pushButton_2->hide();
+//    ui->pushButton_3->hide();
+//    ui->pushButton_4->hide();
+//    ui->pushButton_5->hide();
+//    ui->label_hint->hide();
+
+
+//    rgbcamera->init(0);
+//    rgbcamera->start();
+
+    ircamera->start();
 }
 
 void WorkingWidget::on_pushButton_2_clicked()
 {
-    emit passResult();
+//    emit passResult();
+//    emit saveJpg();
+//    emit isDone();
+    rgbcamera->terminate();
+    rgbcamera->deinit();
 }
 
 void WorkingWidget::on_pushButton_3_clicked()
 {
-    emit warnResult();
+    rgbcamera->init(1);
+    rgbcamera->start();
+//    emit warnResult();
+//    Palm_API *palm1 = new Palm_API("/usr/bin/rknn/clsmodel.rknn","/usr/bin/rknn/palm_k.rknn","/usr/bin/rknn/palm0309.rknn");
+//    cv::Mat score;
+//    cv::Point point;
+//    cv::Mat feature;
+//    cv::Mat t_map = cv::imread("/test1.jpeg");
+//    int ret = palm1->Palmclass(t_map,score);
+//    qDebug()<<"ret:"<<ret<<"----score0:"<<score.at<double>(0,0)<<"-----score1:"<<score.at<double>(0,1)<<endl;
+//    cv::Mat roi = palm1->PalmROI(t_map,point); //关键点检测
+//    if(!roi.empty()){
+//        //good point
+//         qDebug()<<"roi good "<<endl;
+//        palm1->Feature(roi,feature);  //特征提取
+//        stringstream stream;
+//        stream<<palm1;
+//         qDebug()<<"feature size "<<QString::fromStdString(stream.str())<<endl;
+//    }
 }
 
 void WorkingWidget::on_pushButton_4_clicked()
@@ -85,3 +145,37 @@ void WorkingWidget::on_pushButton_5_clicked()
 {
     emit queryUser();
 }
+
+void WorkingWidget::saveFinish()
+{
+    Toast::instance().show(Toast::INFO, "拍摄完成!");
+}
+
+void WorkingWidget::showFrame(QImage img)
+{
+
+//    printf("收到帧数据!\n");
+    ui->label_plam->clear();
+    ui->label_plam->setPixmap(QPixmap::fromImage(img));
+
+    ui->label_plam->show();
+//    ui->label_left->hide();
+//    ui->label_right->hide();
+//    if(leftShow){
+//        ui->label_left->show();
+
+//    }else{
+//        ui->label_right->show();
+//    }
+}
+
+void WorkingWidget::badGesture()
+{
+    Toast::instance().show(Toast::INFO, "姿势不正确!");
+}
+
+void WorkingWidget::resume()
+{
+    movie->start();
+}
+

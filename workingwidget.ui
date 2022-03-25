@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>1000</height>
+    <height>1200</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>1</x>
      <y>1</y>
      <width>791</width>
-     <height>791</height>
+     <height>1181</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,3,2,10,0,1,1,1,2">
@@ -218,7 +218,7 @@
       <item>
        <widget class="QPushButton" name="pushButton">
         <property name="text">
-         <string>noreg</string>
+         <string>start</string>
         </property>
         <property name="autoDefault">
          <bool>false</bool>

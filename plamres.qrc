@@ -7,12 +7,12 @@
         <file>images/add.png</file>
         <file>images/face.png</file>
         <file>images/plam.png</file>
-        <file>images/back.svg</file>
-        <file>images/search.svg</file>
-        <file>images/edit.svg</file>
-        <file>images/checked.svg</file>
-        <file>images/unchecked.svg</file>
-        <file>images/error.svg</file>
-        <file>images/right.svg</file>
+        <file>images/back.png</file>
+        <file>images/checked.png</file>
+        <file>images/edit.png</file>
+        <file>images/error.png</file>
+        <file>images/right.png</file>
+        <file>images/search.png</file>
+        <file>images/unchecked.png</file>
     </qresource>
 </RCC>

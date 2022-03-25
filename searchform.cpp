@@ -24,16 +24,16 @@ SearchForm::SearchForm(QWidget *parent) :
     ui->label_title->setPalette(pe);
 
     QFont name_ft;
-    name_ft.setPointSize(28);
+    name_ft.setPointSize(18);
     ui->label_title->setFont(name_ft);
 
     QFont id_ft;
-    id_ft.setPointSize(18);
+    id_ft.setPointSize(14);
     ui->label_hint->setFont(id_ft);
     ui->label_day->setFont(id_ft);
     ui->label_time->setFont(id_ft);
 
-    dbOperator = new DbOperator("plam_data");
+    dbOperator = new DbOperator();
 }
 
 SearchForm::~SearchForm()
@@ -48,4 +48,95 @@ void SearchForm::searchTimerCount(void)
     ui->label_time->setText(strTime);
     QString strDate = locale.toString(QDate::currentDate(),QString("yyyy/M/d"));
     ui->label_day->setText (strDate);
+}
+
+void SearchForm::on_backButton_clicked()
+{
+    emit backUserList();
+}
+
+void SearchForm::on_pushButton_1_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="1";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_2_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="2";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_3_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="3";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_4_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="4";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_5_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="5";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_6_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="6";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_7_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="7";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_8_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="8";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_9_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="9";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_10_clicked()
+{
+    ui->lineEdit->setText("");
+}
+
+void SearchForm::on_pushButton_11_clicked()
+{
+    QString data = ui->lineEdit->text();
+    data+="0";
+    ui->lineEdit->setText(data);
+}
+
+void SearchForm::on_pushButton_12_clicked()
+{
+    QString data = ui->lineEdit->text();
+    emit searchResult(data);
+}
+
+void SearchForm::resetForm(){
+    if(ui->lineEdit->text().length()>0)
+        ui->lineEdit->setText(ui->lineEdit->text().left(ui->lineEdit->text().length()-1));
 }

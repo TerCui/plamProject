@@ -11,6 +11,8 @@
 #include "registerform.h"
 #include "userlistform.h"
 #include "searchform.h"
+#include "camerathread.h"
+#include "rgbcamerathread.h"
 
 namespace Ui {
 class mainwidget;
@@ -30,15 +32,23 @@ public slots:
     void switchToPass();
     void switchToWarn();
     void switchToRegister();
-    void addDbUser();
     void queryDbUser();
     void switchToSearch();
+    void searchResult(QString);
+    void editUser(QString);
+    void startIRCamera();
+    void regSuccess();
+    void regStart(QString);
+    void workingResumeDone();
 
 signals:
     void resetPassCount();
     void resetRegCount();
     void resetWarnCount();
     void resetRegisterForm();
+    void userData(QString);
+    void resetUserList(QString);
+
 
 private:
     Ui::mainwidget *ui;
@@ -50,6 +60,10 @@ private:
     RegisterForm * registerForm;
     UserListForm * userListForm;
     SearchForm * searchForm;
+//    CameraThread * cameraThread;
+    bool regStarted;
+    QString regId;
+//    RgbCameraThread *rgbcamera;
 };
 
 #endif // MAINWIDGET_H

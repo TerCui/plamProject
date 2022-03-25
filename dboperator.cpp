@@ -1,13 +1,12 @@
 #include "dboperator.h"
 
-DbOperator::DbOperator(std::string connection):
-    connection_(connection)
+DbOperator::DbOperator()
 {
     initDb();
 }
 void DbOperator::initDb()
 {
-    QString connection = QString::fromStdString(connection_);
+    QString connection = QString::fromStdString("plam_data");
 
     /// 创建连接
     if (QSqlDatabase::contains(connection))
@@ -97,18 +96,18 @@ bool DbOperator::initUserTable()
     QSqlQuery query(db);
     return query.exec(QString::fromStdString(u8"create table user_info(id varchar(20) primary key,name varchar(200)"
                                              ",department varchar(200),pin varchar(20),card_no varchar(50),auth varchar(20)"
-                                             ",plam varchar(200),face varchar(200))"));
+                                             ",plam varchar(2000),face varchar(2000))"));
 }
 
 bool DbOperator::checkUserIfExists(QString eNumber)
 {
     if (!exists("user_info"))
     {
-         qDebug() <<QString("not exist!")<<endl;
+//         qDebug() <<QString("not exist!")<<endl;
         initUserTable();
     }
     else {
-        qDebug() <<QString("querying!")<<endl;
+//        qDebug() <<QString("querying!")<<endl;
         QVariant en(eNumber);
         QSqlQuery qry(db);
         qry.prepare(u8"SELECT * FROM user_info WHERE id=:id");
@@ -165,6 +164,79 @@ QList<User> DbOperator::queryAll(){
     }
     return list;
 }
+
+QList<User> DbOperator::queryUsers(QString eNumber)
+{
+    QList<User> list;
+    if (!exists("user_info"))
+    {
+         qDebug() <<QString("not exist!")<<endl;
+        initUserTable();
+    }
+    else {
+
+        QSqlQuery query(db);
+        query.prepare(u8"SELECT * FROM user_info WHERE id like :id");
+        query.bindValue(":id", QString("%%1%").arg(eNumber));
+        if (!query.exec())
+            qDebug() << query.lastError();
+        else
+        {
+
+            while(query.next())
+            {
+                User *user = new User();
+                user->id = query.value(0).toString();
+                user->name = query.value(1).toString();
+                user->department = query.value(2).toString();
+                user->pin = query.value(3).toString();
+                user->cardNo = query.value(4).toString();
+                user->auth = query.value(5).toString();
+                user->plam = query.value(6).toString();
+                user->face = query.value(7).toString();
+
+                list.append(*user);
+            }
+        }
+    }
+    return list;
+}
+
+User DbOperator::queryUser(QString eNumber)
+{
+   User *user = new User();
+   if (!exists("user_info"))
+   {
+        qDebug() <<QString("not exist!")<<endl;
+       initUserTable();
+   }
+   else {
+
+       QSqlQuery query(db);
+       query.prepare(u8"SELECT * FROM user_info WHERE id = :id");
+       query.bindValue(":id", eNumber);
+       if (!query.exec())
+           qDebug() << query.lastError();
+       else
+       {
+
+           while(query.next())
+           {
+               user->id = query.value(0).toString();
+               user->name = query.value(1).toString();
+               user->department = query.value(2).toString();
+               user->pin = query.value(3).toString();
+               user->cardNo = query.value(4).toString();
+               user->auth = query.value(5).toString();
+               user->plam = query.value(6).toString();
+               user->face = query.value(7).toString();
+
+           }
+       }
+   }
+   return *user;
+}
+
 
 void DbOperator::deleteUsers(QList<QString> idList){
     if (!exists("user_info"))

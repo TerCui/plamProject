@@ -1,4 +1,5 @@
 #include "mainwidget.h"
+#include "userlistform.h"
 
 #include <QApplication>
 

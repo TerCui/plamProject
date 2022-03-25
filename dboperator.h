@@ -12,7 +12,7 @@
 class DbOperator
 {
 public:
-    DbOperator(std::string connection);
+    DbOperator();
     ~DbOperator();
     /// 插入记录
     bool insertUser(User info);
@@ -22,6 +22,10 @@ public:
     bool checkUserIfExists(QString eNumber);
 
     QList<User> queryAll();
+
+    QList<User> queryUsers(QString eNumber);
+
+    User queryUser(QString eNumber);
 
     void deleteUsers(QList<QString> idList);
 private:
