@@ -115,8 +115,8 @@ void WorkingWidget::on_pushButton_2_clicked()
 
 void WorkingWidget::on_pushButton_3_clicked()
 {
-    rgbcamera->init(1);
-    rgbcamera->start();
+//    rgbcamera->init(1);
+//    rgbcamera->start();
 //    emit warnResult();
 //    Palm_API *palm1 = new Palm_API("/usr/bin/rknn/clsmodel.rknn","/usr/bin/rknn/palm_k.rknn","/usr/bin/rknn/palm0309.rknn");
 //    cv::Mat score;
@@ -134,6 +134,23 @@ void WorkingWidget::on_pushButton_3_clicked()
 //        stream<<palm1;
 //         qDebug()<<"feature size "<<QString::fromStdString(stream.str())<<endl;
 //    }
+
+    Palm_API *palm1 = new Palm_API("/usr/bin/rknn/clsmodel_rgb.rknn","/usr/bin/rknn/palm_k_rgb.rknn","/usr/bin/rknn/palm_rgb.rknn");
+    cv::Mat score;
+    cv::Point point;
+    cv::Mat feature;
+    cv::Mat t_map = cv::imread("/test_rgb.jpg");
+    int ret = palm1->Palmclass(t_map,score);
+    qDebug()<<"ret:"<<ret<<"----score0:"<<score.at<double>(0,0)<<"-----score1:"<<score.at<double>(0,1)<<endl;
+    cv::Mat roi = palm1->PalmROI(t_map,point); //关键点检测
+    if(!roi.empty()){
+        //good point
+         qDebug()<<"roi good "<<endl;
+        palm1->Feature(roi,feature);  //特征提取
+        stringstream stream;
+        stream<<palm1;
+         qDebug()<<"feature str "<<QString::fromStdString(stream.str())<<endl;
+    }
 }
 
 void WorkingWidget::on_pushButton_4_clicked()

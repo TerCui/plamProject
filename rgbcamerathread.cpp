@@ -61,15 +61,18 @@ static void video_packet_cb(MEDIA_BUFFER mb) {
             theRgb->saveDone();
         }
 
+        cv::Mat mat_s;// sub rect jpeg
+        cv::Rect rect(360,0,1200,1080);
+        mat_s = map_r(rect);
         cv::Mat score;
         cv::Point point;
         cv::Mat feature;
-        int ret = theRgb->palm1->Palmclass(map_r,score);
+        int ret = theRgb->palm1->Palmclass(mat_s,score);
         qDebug()<<"ret:"<<ret<<"------------------------------score:"<<score.at<double>(0,1)<<endl;
         if(score.at<double>(0,1) > score.at<double>(0,0)){ //score.at<double>(0,0)
             //good gesture
             qDebug()<<"good gesture!"<<endl;
-            cv::Mat roi = theRgb->palm1->PalmROI(map_r,point); //关键点检测
+            cv::Mat roi = theRgb->palm1->PalmROI(mat_s,point); //关键点检测
             if(!roi.empty()){
                 //good point
                 theRgb->palm1->Feature(roi,feature);  //特征提取
@@ -81,6 +84,17 @@ static void video_packet_cb(MEDIA_BUFFER mb) {
                         theRgb->user->plam = QString::fromStdString(stream.str());
                         if(theRgb->dbOperator->updateUser(*(theRgb->user))){
                             theRgb->registerSuccess();
+                        }
+                    }
+                }else{
+                    //todo: compare feature in db
+                    for(int i=0; i< theRgb->users.size(); ++i){
+                        if(!(theRgb->users)[i].plam.isEmpty()){
+                            cv::Mat featureU = theRgb->QString2Mat((theRgb->users)[i].plam);
+                            double compare = theRgb->palm1->Compare(feature,featureU);
+                            qDebug()<<"compare score:"<<compare<<endl;
+                            //todo:set score limit of pass
+
                         }
                     }
                 }
@@ -122,7 +136,7 @@ RgbCameraThread::RgbCameraThread(QObject *parent)
     cv::Mat newCameraMatrix = cv::Mat(3, 3, CV_32FC1, cv::Scalar::all(0));
     cv::fisheye::initUndistortRectifyMap(K, D, R, K, imageSize, CV_32FC1, mapx, mapy);
 
-    palm1 = new Palm_API("/usr/bin/rknn/clsmodel.rknn","/usr/bin/rknn/palm_k.rknn","/usr/bin/rknn/palm0309.rknn");
+    palm1 = new Palm_API("/usr/bin/rknn/clsmodel_rgb.rknn","/usr/bin/rknn/palm_k_rgb.rknn","/usr/bin/rknn/palm_rgb.rknn");
     dbOperator = new DbOperator();
     user = new User();
 }
@@ -170,6 +184,8 @@ void RgbCameraThread::init(int cameraId){
     s32CamId = cameraId;
 }
 void RgbCameraThread::cameraInit(){
+    users = dbOperator->queryAll();
+
     u32SrcWidth = 1920;
     u32SrcHeight = 1080;
     u32DstWidth = 1920;
@@ -333,4 +349,24 @@ void RgbCameraThread::deinit(){
 void RgbCameraThread::set_argb8888_buffer(RK_U32 *buf, RK_U32 size, RK_U32 color) {
   for (RK_U32 i = 0; buf && (i < size); i++)
     *(buf + i) = color;
+}
+
+cv::Mat RgbCameraThread::QString2Mat(QString text)
+{
+    QStringList rowvalueList=text.split(";");
+    int Matrow=rowvalueList.size();
+    int Matcol=QString(rowvalueList[0]).split(",").size();
+    float *matrix = new float[Matrow*Matcol];
+    for(int row=0;row<Matrow;++row){
+        QString rowvalues=rowvalueList[row];
+        QStringList colvalues=  rowvalues.split(",");
+
+        for(int col=0;col<Matcol;++col){
+           float value=QString(colvalues[col]).replace("\n","").replace("[","").replace("]","").toFloat();
+           matrix[row*Matcol+col]=value;
+        }
+    }
+    cv::Mat Matrix(cv::Size(Matcol, Matrow), CV_32FC1, matrix);//注意：opencv里的行列顺序是和maltab相反的
+    delete []matrix;
+    return Matrix;
 }

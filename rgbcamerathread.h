@@ -39,6 +39,9 @@ public:
     User *user;
      bool showPic;
      bool startReg;
+     QList<User> users;
+
+      cv::Mat QString2Mat(QString);
 
 signals:
     void saveDone();
@@ -68,6 +71,7 @@ private:
 
     void set_argb8888_buffer(RK_U32 *buf, RK_U32 size, RK_U32 color);
     void cameraInit();
+
 };
 
 #endif // RGBCAMERATHREAD_H
